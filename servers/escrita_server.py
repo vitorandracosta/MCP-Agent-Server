@@ -1,7 +1,8 @@
 """
 Servidor MCP "escrita": cria arquivos novos, SOMENTE dentro de
 config.OUTPUT_DIR (pasta saidas/). Não sobrescreve nada sem pedido
-explícito e não aceita caminhos que escapem da pasta.
+explícito (nome repetido ganha sufixo _2, _3...) e não aceita caminhos
+que escapem da pasta.
 """
 from pathlib import Path
 
@@ -30,12 +31,23 @@ def _destino(nome: str) -> Path:
     return alvo
 
 
+def _nome_livre(alvo: Path) -> Path:
+    """resumo.md já existe -> resumo_2.md, resumo_3.md... (sem espaços, para o link da tela)."""
+    n = 2
+    livre = alvo
+    while livre.exists():
+        livre = alvo.with_name(f"{alvo.stem}_{n}{alvo.suffix}")
+        n += 1
+    return livre
+
+
 @mcp.tool()
 def criar_arquivo(nome: str, conteudo: str, sobrescrever: bool = False) -> str:
-    """Cria um arquivo novo na pasta saidas/ (ex.: nome='resumo_calculo.md'). Aceita .md, .txt, .json, .csv, .py, .html e .docx; sem extensão, usa .md."""
-    alvo = _destino(nome)
-    if alvo.exists() and not sobrescrever:
-        raise ValueError(f"Já existe {alvo.name}. Escolha outro nome ou use sobrescrever=true.")
+    """Cria um arquivo novo na pasta saidas/ (ex.: nome='resumo_calculo.md'). Aceita .md, .txt, .json, .csv, .py, .html e .docx; sem extensão, usa .md. Se o nome já existir, usa um nome livre (resumo_2.md), a menos que sobrescrever=true."""
+    pedido = _destino(nome)
+    # Modelos pequenos raramente se recuperam de um erro "nome já existe":
+    # em vez de falhar, salva com um nome livre e avisa no resultado.
+    alvo = pedido if sobrescrever else _nome_livre(pedido)
     if len(conteudo) > MAX_CHARS:
         raise ValueError(f"Conteúdo grande demais ({len(conteudo)} caracteres; limite {MAX_CHARS}).")
 
@@ -53,7 +65,10 @@ def criar_arquivo(nome: str, conteudo: str, sobrescrever: bool = False) -> str:
         documento.save(str(alvo))
     else:
         alvo.write_text(conteudo, encoding="utf-8")
-    return f"Arquivo criado: {alvo} ({alvo.stat().st_size} bytes)"
+    resultado = f"Arquivo criado: {alvo} ({alvo.stat().st_size} bytes)"
+    if alvo != pedido:
+        resultado += f". Já existia {pedido.name}, então o arquivo foi salvo como {alvo.name}."
+    return resultado
 
 
 def _arquivos_gerados() -> str:

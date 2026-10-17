@@ -103,14 +103,14 @@ Pontos centrais:
 | `explorador` | arquivos | `arquivos://pastas-permitidas` | localiza arquivos e pastas, abre arquivos |
 | `pesquisador` | rag, arquivos | `rag://status` | responde sobre o conteúdo dos documentos, citando fontes |
 | `resumidor` | arquivos, rag | `arquivos://pastas-permitidas` | resume arquivo, pasta ou assunto |
-| `escritor` | escrita, arquivos, rag | `saidas://lista` | cria arquivos (`.md`, `.txt`, `.docx`, ...) em `saidas/` |
+| `escritor` | escrita, arquivos, rag | `saidas://lista`, `arquivos://pastas-permitidas` | cria arquivos (`.md`, `.txt`, `.docx`, ...) em `saidas/` |
 | `sistema` | sistema | `sistema://info` | GPU, VRAM, sistema operacional |
 | `geral` | — | — | conhecimento geral, sem tools |
 
 | Servidor | Tools | Resources | Prompts |
 |---|---|---|---|
 | `arquivos` | `listar_pastas_permitidas`, `listar_diretorio`, `buscar_arquivos`, `ler_arquivo`, `visao_geral_pasta` | `arquivos://pastas-permitidas` | `resumir_pasta` |
-| `rag` | `buscar_contexto_local`, `reindexar_documentos`, `status_indice` | `rag://status`, `rag://busca/{pergunta}` (template) | `pergunta_com_fontes` |
+| `rag` | `buscar_contexto_local`, `reindexar_documentos`, `status_indice`, `buscar_trechos` | `rag://status`, `rag://arquivos`, `rag://busca/{pergunta}` e `rag://arquivo/{caminho}` (templates) | `pergunta_com_fontes` |
 | `escrita` | `criar_arquivo`, `listar_arquivos_gerados` | `saidas://lista` | `relatorio` |
 | `sistema` | `info_sistema`, `uso_gpu`, `calcular_vram_disponivel` | `sistema://info`, `sistema://gpu` | — |
 
@@ -127,7 +127,14 @@ python -m venv .venv
 pip install -r requirements.txt
 
 ollama pull qwen2.5:3b            # com o Ollama em execução
+setx OLLAMA_CONTEXT_LENGTH 8192   # Linux/macOS: export ...; depois reinicie o Ollama
 ```
+
+A janela de contexto padrão do Ollama é menor do que o que um turno com tools
+ocupa (system prompt, schemas das tools, arquivo lido e histórico). Quando
+estoura, o Ollama corta o início da conversa **sem avisar**, às vezes levando
+junto as instruções do agente. Com 8192 tokens o `qwen2.5:3b` ainda cabe
+inteiro numa GPU de 4 GB (~2,3 GB). Confira com `ollama ps` (coluna CONTEXT).
 
 **Configuração (opcional).** Sem configuração nenhuma, o sistema usa os
 documentos de demonstração de [`exemplos/documentos/`](exemplos/documentos).
@@ -160,8 +167,9 @@ nuvem via DashScope. Veja `.env.example`.
 
 | Aba | O que mostra |
 |---|---|
-| **Conversa** | Chat com o roteamento ao vivo (agente, motivo, resources, tools, tempos). Ao lado, um **guia do que dá para fazer hoje**: estado real do LLM, do índice, da GPU e das pastas; exemplos de pedido montados com nomes reais das pastas monitoradas; e a lista do que o sistema **ainda não faz**. |
-| **Histórico** | Conversas salvas em SQLite, com todos os passos de cada turno, opção de continuar a conversa e **estatísticas por agente** (turnos, tempo médio, erros, uso do fallback). |
+| **Conversa** | Chat com o roteamento ao vivo (agente, motivo, resources, tools, tempos). Ao lado, um **guia**: estado real do LLM, do índice, da GPU e das pastas, e o que cada agente faz, com exemplos montados com nomes reais das pastas monitoradas. |
+| **Histórico** | Conversas salvas em SQLite, com todos os passos de cada turno, **renomear e organizar em pastas**, opção de continuar a conversa e **estatísticas por agente** (turnos, tempo médio, erros, uso do fallback). |
+| **RAG** | Fontes do índice (pastas do `.env`, pastas/arquivos adicionados pela tela e arquivos enviados), remoção de fontes e **exclusão de subpastas/arquivos do índice** (reversíveis), **o que foi indexado e em quantos trechos**, os trechos de cada arquivo, arquivos sem texto extraível, pendências de reindexação, **busca de teste com a similaridade** e as opções do RAG (tamanho e sobreposição dos trechos, top-k, extensões, modelo de embedding), salvas em `dados/rag_config.json`. |
 | **Recursos MCP** | Catálogo lido ao vivo dos servidores: tools e seus parâmetros, resources (com leitura na hora), templates (com formulário) e prompts (gera o texto e envia para a conversa). Mostra quais agentes usam cada item. |
 | **Como funciona** | Fluxograma da arquitetura que **acende as etapas e os servidores usados na última execução**, linha do tempo dos eventos, tecnologias e mapa do código. |
 
@@ -178,7 +186,7 @@ conversa específica em cada aba.
 
 ```bash
 pip install -r requirements-dev.txt
-python -m pytest                          # 44 testes, ~40 s, não precisa do LLM
+python -m pytest                          # 50 testes, ~40 s, não precisa do LLM
 RODAR_LLM=1 python -m pytest -m llm       # pipeline completo com o Ollama
 python -m avaliacao.avaliar_roteador      # acurácia do roteador (precisa do LLM)
 ```
@@ -216,15 +224,33 @@ por classificação: ~1,2 s.
 - Quando a busca falha, o modelo pode **escrever conteúdo sem base nos
   documentos** (alucinação). O histórico registra o passo que falhou, o que
   permite identificar o problema.
+- **Caso "escreva um arquivo com nomes de todas as matérias que tenho"**: o
+  roteador escolhia o escritor, mas o escritor não tinha tool para listar
+  pastas. O modelo inventava um `matérias.txt`, tentava `../..` e salvava um
+  texto genérico. Depois de dar `listar_diretorio` e o resource de pastas
+  permitidas ao escritor, ele passou a listar a pasta certa e usar os nomes
+  reais, mas ainda erra ao copiar alguns (letras trocadas ou faltando). Na mesma
+  execução, o nome do arquivo já existia: o modelo **não se recuperou** do
+  erro, e `criar_arquivo` passou a escolher sozinho um nome livre.
+  Conclusão: parte das falhas atribuídas ao modelo de 3B vinha do desenho
+  (tools faltando, erros recuperáveis).
+- **Qualidade do índice** (medida na aba RAG, numa coleção pessoal de 257
+  arquivos): 19% dos PDFs (28 de 147) não tinham texto extraível
+  (escaneados), e 2 arquivos geravam 40% dos trechos, dominando os
+  resultados da busca. A aba permite ver e excluir esses casos.
 
 ## Limitações e trabalhos futuros
 
 - Modelo pequeno: qualidade das respostas e do uso de tools limitada. Testar
   modelos de 7B+ ou endpoints na nuvem pelo `.env`.
 - Embeddings em inglês (`all-MiniLM-L6-v2`): para documentos em português,
-  avaliar `paraphrase-multilingual-MiniLM-L12-v2` (`EMBEDDING_MODEL` no `.env`).
+  avaliar `paraphrase-multilingual-MiniLM-L12-v2` (aba RAG ou `EMBEDDING_MODEL` no `.env`).
 - Sem OCR (PDFs escaneados não são lidos) e sem acesso à internet.
 - O escritor só cria arquivos novos; não edita nem apaga.
+- Um agente por turno: pedidos que exigem encadear agentes (explorar,
+  resumir e depois escrever) dependem de um único agente ter todas as tools.
+  Um planejador que encadeia agentes é o próximo passo natural.
+- Chunking por caracteres, sem respeitar parágrafos ou seções.
 - Avaliação: ampliar o conjunto rotulado, separar validação e teste, e medir
   a taxa de chamadas de tool corretas e a fidelidade às fontes.
 - Arquitetura: delegação entre agentes (um agente chamando outro) e
@@ -250,8 +276,9 @@ por classificação: ~1,2 s.
 │   └── extracao.py         texto de txt/md/py/pdf/docx
 ├── web/
 │   ├── app.py              API REST + stream NDJSON
-│   ├── historico.py        persistência SQLite
-│   ├── guia.py             guia "o que dá para fazer hoje"
+│   ├── historico.py        persistência SQLite (conversas, títulos, pastas)
+│   ├── rag.py              API da aba RAG (fontes, envios, exclusões, opções)
+│   ├── guia.py             guia lateral: estado do sistema e o que cada agente faz
 │   └── static/             interface (HTML, CSS, JS sem frameworks)
 ├── avaliacao/              avaliação do roteador (casos rotulados + resultados)
 ├── exemplos/documentos/    documentos de demonstração
@@ -260,4 +287,5 @@ por classificação: ~1,2 s.
 ```
 
 Gerados localmente e fora do git: `.env`, `rag_index/` (índice vetorial),
-`dados/` (histórico) e `saidas/` (arquivos criados).
+`dados/` (histórico, `rag_config.json` com as opções da aba RAG e
+`enviados/` com os arquivos enviados pela tela) e `saidas/` (arquivos criados).

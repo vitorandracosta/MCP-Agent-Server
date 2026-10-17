@@ -20,8 +20,14 @@ def _sem_acento(texto: str) -> str:
     return unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode().lower()
 
 
+def _bases() -> list:
+    """Pastas (ou arquivos soltos) permitidos, já com as fontes adicionadas pela tela."""
+    config.sincronizar()
+    return config.PASTAS_LEITURA
+
+
 def _pastas_permitidas() -> str:
-    return "\n".join(str(p) for p in config.PASTAS_LEITURA)
+    return "\n".join(str(p) for p in _bases())
 
 
 # --- Resources: contexto que a APLICAÇÃO lê e entrega ao agente -------------
@@ -51,7 +57,7 @@ def listar_pastas_permitidas() -> str:
 @mcp.tool()
 def listar_diretorio(caminho: str) -> str:
     """Lista arquivos e subpastas de um diretório (caminho absoluto ou relativo a uma pasta permitida)."""
-    p = resolver(caminho, config.PASTAS_LEITURA)
+    p = resolver(caminho, _bases())
     if p is None:
         return NEGADO
     if not p.is_dir():
@@ -67,15 +73,19 @@ def listar_diretorio(caminho: str) -> str:
 def buscar_arquivos(termo: str, pasta: str = "", max_resultados: int = 30) -> str:
     """Procura arquivos cujo NOME contém o termo (ex.: 'calculo', '.pdf'; ignora acentos e maiúsculas), em uma pasta ou em todas as permitidas."""
     if pasta:
-        base = resolver(pasta, config.PASTAS_LEITURA)
+        base = resolver(pasta, _bases())
         if base is None:
             return NEGADO
         bases = [base]
     else:
-        bases = config.PASTAS_LEITURA
+        bases = _bases()
     termo = _sem_acento(termo.strip())
     achados = []
     for base in bases:
+        if base.is_file():  # fonte que é um arquivo solto
+            if termo in _sem_acento(base.name):
+                achados.append(str(base))
+            continue
         if not base.is_dir():
             continue
         for item in base.rglob("*"):
@@ -89,7 +99,7 @@ def buscar_arquivos(termo: str, pasta: str = "", max_resultados: int = 30) -> st
 @mcp.tool()
 def ler_arquivo(caminho: str, max_chars: int = 6000) -> str:
     """Lê o texto de um arquivo (.txt, .md, .py, .pdf, .docx etc.) dentro das pastas permitidas."""
-    p = resolver(caminho, config.PASTAS_LEITURA)
+    p = resolver(caminho, _bases())
     if p is None:
         return NEGADO
     if not p.is_file():
@@ -105,7 +115,7 @@ def ler_arquivo(caminho: str, max_chars: int = 6000) -> str:
 @mcp.tool()
 def visao_geral_pasta(caminho: str, max_arquivos: int = 8, chars_por_arquivo: int = 600) -> str:
     """Mostra o início do texto de vários arquivos de uma pasta (incluindo subpastas) de uma vez. Útil para resumir uma pasta."""
-    p = resolver(caminho, config.PASTAS_LEITURA)
+    p = resolver(caminho, _bases())
     if p is None:
         return NEGADO
     if not p.is_dir():

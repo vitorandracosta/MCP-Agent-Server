@@ -1,5 +1,5 @@
-// Painel "O que dá para fazer agora": estado real do sistema + exemplos
-// preenchidos com nomes reais das suas pastas + limitações honestas.
+// Painel lateral: estado real do sistema + o que cada agente faz, com exemplos
+// preenchidos com nomes reais das suas pastas.
 import { el, api } from "./util.js";
 
 function linhaStatus(ok, titulo, detalhe, extra) {
@@ -30,36 +30,24 @@ function blocoStatus(s, totais, aoReindexar) {
   );
 }
 
-function blocoAgentes(agentes, aoEscolher, aoSortear) {
-  const sortear = el("button", "pequeno", "↻ Outras sugestões");
-  sortear.type = "button";
-  sortear.addEventListener("click", aoSortear);
-  const cards = agentes.map((a) => {
-    const exemplos = a.exemplos.map((texto) => {
-      const b = el("button", "exemplo", texto);
-      b.type = "button";
-      b.title = `Enviar (o roteador deve escolher: ${a.nome})`;
-      b.addEventListener("click", () => aoEscolher(texto));
-      return b;
-    });
-    return el("div", `guia-agente agente-borda-${a.nome}`, el("b", "", a.nome), el("p", "", a.descricao),
-      ...(exemplos.length ? exemplos : [el("p", "aviso-texto", "Sem exemplos: não encontrei arquivos nas pastas monitoradas.")]));
-  });
+// Só informativo: descreve cada agente e o tipo de pedido que ele atende.
+function blocoAgentes(agentes) {
+  const cards = agentes.map((a) => el("div", `guia-agente agente-borda-${a.nome}`,
+    el("b", "", a.nome), el("p", "", a.descricao),
+    a.exemplos.length
+      ? el("ul", "guia-exemplos", ...a.exemplos.map((texto) => el("li", "", texto)))
+      : el("p", "aviso-texto", "Sem exemplos: não encontrei arquivos nas pastas monitoradas.")));
   return el("section", "guia-bloco",
-    el("div", "guia-cabecalho", el("h3", "", "O que dá para fazer agora"), sortear),
-    el("p", "guia-nota", "Os exemplos usam nomes reais das suas pastas. Ao clicar, o pedido passa pelo roteador: veja se ele escolhe o agente esperado."),
+    el("h3", "", "O que dá para fazer agora"),
+    el("p", "guia-nota", "Cada agente e exemplos de pedidos que ele atende, com nomes reais das suas pastas. O agente que estiver trabalhando fica destacado."),
     ...cards);
 }
 
-function blocoLista(titulo, itens, classe) {
-  return el("section", "guia-bloco", el("h3", "", titulo), el("ul", classe, ...itens.map((i) => el("li", "", i))));
-}
-
-export async function carregarGuia(container, { aoEscolher, semente } = {}) {
+export async function carregarGuia(container) {
   container.replaceChildren(el("div", "carregando", "Verificando o sistema"));
   let dados;
   try {
-    dados = await api("/api/guia" + (semente !== undefined ? `?semente=${semente}` : ""));
+    dados = await api("/api/guia");
   } catch (e) {
     container.replaceChildren(el("div", "caixa-erro", "Falha ao carregar o guia: " + e.message));
     return null;
@@ -73,15 +61,12 @@ export async function carregarGuia(container, { aoEscolher, semente } = {}) {
     } catch (e) {
       alert("Falha ao indexar: " + e.message);
     }
-    carregarGuia(container, { aoEscolher });
+    carregarGuia(container);
   };
-  const aoSortear = () => carregarGuia(container, { aoEscolher, semente: Math.floor(Math.random() * 1e6) });
 
   container.replaceChildren(
     blocoStatus(dados.status, dados.totais, aoReindexar),
-    blocoAgentes(dados.agentes, aoEscolher, aoSortear),
-    blocoLista("Ainda não faz", dados.limitacoes, "lista-limites"),
-    blocoLista("Dicas", dados.dicas, "lista-dicas"),
+    blocoAgentes(dados.agentes),
   );
   return dados;
 }

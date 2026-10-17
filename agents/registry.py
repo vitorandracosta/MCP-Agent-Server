@@ -84,9 +84,9 @@ AGENTS = {
         "descricao": "Qualquer pedido para CRIAR, SALVAR, GERAR ou ESCREVER um arquivo (inclusive um "
                      "resumo, relatório, lista ou anotação salvo em arquivo), na pasta saidas/.",
         "servidores": ["escrita", "arquivos", "rag"],
-        "tools": ["criar_arquivo", "listar_arquivos_gerados", "buscar_arquivos", "ler_arquivo",
-                  "buscar_contexto_local"],
-        "resources": ["saidas://lista"],
+        "tools": ["criar_arquivo", "listar_arquivos_gerados", "listar_diretorio", "buscar_arquivos",
+                  "ler_arquivo", "buscar_contexto_local"],
+        "resources": ["saidas://lista", "arquivos://pastas-permitidas"],
         "exige_tool": "criar_arquivo",
         "exemplos": [
             "Crie um arquivo resumo.md com os principais pontos sobre {assunto}",
@@ -96,7 +96,10 @@ AGENTS = {
             "Você é o agente escritor. Sua tarefa SEMPRE termina com um arquivo salvo via "
             "criar_arquivo. Não peça confirmação nem faça perguntas: decida o conteúdo você "
             "mesmo. Se o pedido depender de documentos locais, leia-os antes "
-            "(buscar_arquivos, ler_arquivo ou buscar_contexto_local). Escreva o conteúdo "
+            "(buscar_arquivos, ler_arquivo ou buscar_contexto_local). Se depender do que "
+            "EXISTE nas pastas (ex.: nomes das matérias, lista de arquivos), use "
+            "listar_diretorio nas pastas permitidas e copie os nomes reais retornados; "
+            "nunca invente caminhos nem use '..'. Escreva o conteúdo "
             "completo e chame criar_arquivo com um nome curto, sem espaços e com extensão "
             "adequada (padrão .md). Depois, informe o nome do arquivo e resuma o que ele contém."
         ),

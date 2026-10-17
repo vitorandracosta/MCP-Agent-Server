@@ -2,10 +2,15 @@
 Servidor MCP "rag": busca semântica nos documentos locais indexados.
 
 Primitivas expostas:
-- Tools: buscar_contexto_local, reindexar_documentos, status_indice.
-- Resources: rag://status (estático) e rag://busca/{pergunta} (template),
-  para clientes que leem contexto por URI em vez de chamar tools.
+- Tools: buscar_contexto_local, reindexar_documentos, status_indice e
+  buscar_trechos (mesma busca, em JSON, para a aba RAG da tela).
+- Resources: rag://status e rag://arquivos (estáticos), rag://busca/{pergunta}
+  e rag://arquivo/{caminho} (templates), para clientes que leem contexto por
+  URI em vez de chamar tools.
 - Prompt: pergunta_com_fontes.
+
+O índice (Chroma) só é aberto por este processo; a tela web administra o
+RAG através destas primitivas, nunca abrindo o banco vetorial diretamente.
 """
 import json
 from urllib.parse import unquote
@@ -17,7 +22,7 @@ from rag import indexer
 mcp = FastMCP("rag")
 
 
-def _buscar(pergunta: str, k: int) -> str:
+def _buscar(pergunta: str, k: int = None) -> str:
     hits = indexer.query(pergunta, k=k)
     if not hits:
         if indexer.status()["total_chunks"] == 0:
@@ -39,7 +44,19 @@ def resource_status() -> str:
 def resource_busca_rag(pergunta: str) -> str:
     """Os trechos mais relevantes para a pergunta (a mesma busca da tool, exposta como Resource)."""
     # Numa URI a pergunta chega codificada (espaços viram %20 etc.).
-    return _buscar(unquote(pergunta), k=4)
+    return _buscar(unquote(pergunta))
+
+
+@mcp.resource("rag://arquivos", name="Arquivos indexados", mime_type="application/json")
+def resource_arquivos() -> str:
+    """Cada arquivo do índice com quantos trechos gerou, e o que mudou nas fontes desde a última indexação."""
+    return json.dumps(indexer.inventario(), ensure_ascii=False)
+
+
+@mcp.resource("rag://arquivo/{caminho}", name="Trechos de um arquivo", mime_type="application/json")
+def resource_trechos(caminho: str) -> str:
+    """Os trechos (chunks) que um arquivo gerou no índice, exatamente como o modelo os recebe."""
+    return json.dumps(indexer.trechos_do_arquivo(unquote(caminho)), ensure_ascii=False)
 
 
 # --- Prompts -----------------------------------------------------------------
@@ -54,9 +71,15 @@ def prompt_pergunta_com_fontes(pergunta: str) -> str:
 # --- Tools -------------------------------------------------------------------
 
 @mcp.tool()
-def buscar_contexto_local(pergunta: str, k: int = 4) -> str:
+def buscar_contexto_local(pergunta: str, k: int | None = None) -> str:
     """Busca nos documentos locais indexados (RAG) os trechos mais relevantes para a pergunta, com a fonte de cada um."""
     return _buscar(pergunta, k)
+
+
+@mcp.tool()
+def buscar_trechos(pergunta: str, k: int | None = None) -> str:
+    """Busca semântica que devolve JSON (trecho, fonte, número do trecho e similaridade). Usada pela aba RAG da tela."""
+    return json.dumps(indexer.query(pergunta, k=k), ensure_ascii=False)
 
 
 @mcp.tool()

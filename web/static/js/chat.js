@@ -25,7 +25,7 @@ function telaVazia() {
     el("h2", "", "Faça um pedido"),
     el("p", "", "O roteador escolhe o agente mais adequado e explica por quê. O agente lê seus resources, chama tools nos servidores MCP e responde. Cada passo aparece aqui."),
     el("div", "sugestoes", ...sugestoes),
-    el("p", "dica-texto", "Veja no guia o que funciona hoje e o que ainda não."));
+    el("p", "dica-texto", "Veja no guia ao lado o que cada agente faz."));
 }
 
 function reiniciar() {
@@ -129,6 +129,10 @@ export async function iniciarChat(agentes) {
   ouvir("aba-aberta", ({ aba, parametro }) => {
     if (aba === "conversa" && parametro && parametro !== conversaId) carregarConversa(parametro).catch(() => reiniciar());
   });
+  ouvir("rag-alterado", async () => { guia = await carregarGuia($("#guia")); });
+  ouvir("conversa-renomeada", ({ id, titulo }) => {
+    if (id === conversaId) $("#titulo-conversa").textContent = titulo;
+  });
   ouvir("usar-texto", (texto) => {
     location.hash = "#conversa";
     $("#entrada").value = texto;
@@ -140,7 +144,7 @@ export async function iniciarChat(agentes) {
   });
 
   reiniciar();
-  // Exemplos passam pelo roteador (não forçam o agente), para mostrar se ele acerta.
-  guia = await carregarGuia($("#guia"), { aoEscolher: (texto) => enviar(texto) });
+  // As sugestões da tela vazia passam pelo roteador (não forçam o agente), para mostrar se ele acerta.
+  guia = await carregarGuia($("#guia"));
   if (!conversaId && !$("#mensagens .turno")) reiniciar();
 }

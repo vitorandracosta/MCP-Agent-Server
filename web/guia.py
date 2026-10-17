@@ -1,7 +1,7 @@
 """
 Guia "o que dá para fazer hoje": monta, a partir do estado REAL do sistema
 (pastas monitoradas, arquivos indexados, LLM, GPU), exemplos de pedido que
-funcionam agora e a lista do que o sistema ainda não faz.
+funcionam agora.
 """
 import json
 import random
@@ -19,22 +19,6 @@ PALAVRAS_IGNORADAS = {
     "quando", "sobre", "para", "entre", "depois", "antes", "outro", "outra", "nosso",
     "nossa", "segundo", "primeiro", "parte", "partes", "como", "onde", "porque",
 }
-
-LIMITACOES = [
-    "Não acessa a internet: responde só com os seus arquivos e o conhecimento do modelo.",
-    "Não edita nem apaga arquivos existentes; só cria arquivos novos em saidas/.",
-    "Não lê imagens nem PDFs escaneados (não há OCR).",
-    "Não executa código nem comandos no computador.",
-    "Só lê arquivos dentro das pastas monitoradas (configuradas no .env) e de saidas/.",
-    "Resumos de arquivos longos usam só o início do texto (o limite de contexto do modelo é pequeno).",
-]
-
-DICAS = [
-    "Se o roteador escolher o agente errado, force o agente no seletor do topo.",
-    "Confira as fontes citadas: modelos pequenos podem errar ou inventar detalhes.",
-    "Um pedido por vez funciona melhor do que várias tarefas na mesma mensagem.",
-    "Depois de adicionar documentos nas pastas, clique em \"Atualizar índice\".",
-]
 
 
 def _sem_acento(texto: str) -> str:
@@ -54,6 +38,7 @@ def _base_de(caminho: Path):
 
 def coletar_amostras() -> dict:
     """Nomes reais de pastas, arquivos e termos para preencher os exemplos."""
+    config.sincronizar()
     arquivos = [p for p in _arquivos_indexados() if p.exists()]
     if not arquivos:  # índice ainda não construído: varre só o primeiro nível
         for base in config.WATCHED_PATHS:
@@ -107,16 +92,9 @@ def montar_guia(status: dict, catalogo: dict, semente=None) -> dict:
             "exemplos": exemplos,
         })
 
-    limitacoes = list(LIMITACOES)
-    if config.EMBEDDING_MODEL == "all-MiniLM-L6-v2":
-        limitacoes.append("A busca semântica usa um modelo de embeddings em inglês; em "
-                          "português ela acha trechos relevantes, mas com precisão menor.")
-
     return {
         "status": status,
         "agentes": agentes,
-        "limitacoes": limitacoes,
-        "dicas": DICAS,
         "totais": {
             "servidores": len(catalogo),
             "tools": sum(len(c["tools"]) for c in catalogo.values()),

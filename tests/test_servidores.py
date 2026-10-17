@@ -40,12 +40,15 @@ def test_criar_arquivo_e_extensao_padrao(pastas):
     assert (pastas["saidas"] / "notas.md").read_text(encoding="utf-8") == "conteúdo"
 
 
-def test_criar_arquivo_nao_sobrescreve(pastas):
+def test_criar_arquivo_nao_sobrescreve_usa_nome_livre(pastas):
     esc.criar_arquivo("a.txt", "1")
-    with pytest.raises(ValueError, match="Já existe"):
-        esc.criar_arquivo("a.txt", "2")
-    esc.criar_arquivo("a.txt", "2", sobrescrever=True)
-    assert (pastas["saidas"] / "a.txt").read_text(encoding="utf-8") == "2"
+    resultado = esc.criar_arquivo("a.txt", "2")
+    assert "a_2.txt" in resultado and "Já existia a.txt" in resultado
+    assert esc.criar_arquivo("a.txt", "3").count("a_3.txt") == 2
+    assert (pastas["saidas"] / "a.txt").read_text(encoding="utf-8") == "1"
+    assert (pastas["saidas"] / "a_2.txt").read_text(encoding="utf-8") == "2"
+    esc.criar_arquivo("a.txt", "4", sobrescrever=True)
+    assert (pastas["saidas"] / "a.txt").read_text(encoding="utf-8") == "4"
 
 
 @pytest.mark.parametrize("nome", ["../fuga.txt", "..\\..\\fuga.txt", "C:/Windows/x.txt", "/etc/x.txt"])

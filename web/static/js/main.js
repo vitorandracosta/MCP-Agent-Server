@@ -2,10 +2,11 @@
 import { $, api, emitir } from "./util.js";
 import { iniciarChat } from "./chat.js";
 import { iniciarHistorico } from "./historico.js";
+import { iniciarRag } from "./rag.js";
 import { iniciarMcp } from "./mcp.js";
 import { iniciarFluxo } from "./fluxo.js";
 
-const ABAS = ["conversa", "historico", "mcp", "fluxo"];
+const ABAS = ["conversa", "historico", "rag", "mcp", "fluxo"];
 
 function abrirAba() {
   // Formato do hash: #aba ou #aba/parametro (ex.: #historico/<id da conversa>).
@@ -36,6 +37,7 @@ async function iniciar() {
     iniciarFluxo(dados.modelo),
   ]);
   iniciarHistorico();
+  iniciarRag();
   abrirAba();  // depois dos módulos, para que recebam o "aba-aberta" inicial
 }
 

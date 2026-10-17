@@ -47,6 +47,10 @@ class Historico:
         self._conn.row_factory = sqlite3.Row
         self._conn.execute("PRAGMA foreign_keys = ON")
         self._conn.executescript(ESQUEMA)
+        colunas = {c["name"] for c in self._conn.execute("PRAGMA table_info(conversas)")}
+        if "pasta" not in colunas:  # bancos criados antes das pastas existirem
+            self._conn.execute("ALTER TABLE conversas ADD COLUMN pasta TEXT")
+            self._conn.commit()
         self._lock = threading.Lock()
 
     def registrar_turno(self, conversa_id: str, pergunta: str, eventos: list, duracao_ms: int):
@@ -85,7 +89,7 @@ class Historico:
     def listar(self) -> list:
         with self._lock:
             linhas = self._conn.execute(
-                "SELECT c.id, c.titulo, c.criada_em, c.atualizada_em, COUNT(t.id) AS n_turnos, "
+                "SELECT c.id, c.titulo, c.pasta, c.criada_em, c.atualizada_em, COUNT(t.id) AS n_turnos, "
                 "GROUP_CONCAT(DISTINCT t.agente) AS agentes "
                 "FROM conversas c LEFT JOIN turnos t ON t.conversa_id = c.id "
                 "GROUP BY c.id ORDER BY c.atualizada_em DESC",
@@ -123,6 +127,27 @@ class Historico:
     def excluir(self, conversa_id: str) -> bool:
         with self._lock, self._conn:
             return self._conn.execute("DELETE FROM conversas WHERE id = ?", (conversa_id,)).rowcount > 0
+
+    def renomear(self, conversa_id: str, titulo: str) -> bool:
+        with self._lock, self._conn:
+            return self._conn.execute("UPDATE conversas SET titulo = ? WHERE id = ?",
+                                      (titulo.strip()[:120], conversa_id)).rowcount > 0
+
+    def mover(self, conversa_id: str, pasta) -> bool:
+        """Coloca a conversa numa pasta (None ou "" tira da pasta)."""
+        with self._lock, self._conn:
+            return self._conn.execute("UPDATE conversas SET pasta = ? WHERE id = ?",
+                                      ((pasta or "").strip()[:80] or None, conversa_id)).rowcount > 0
+
+    def renomear_pasta(self, nome: str, novo: str) -> int:
+        with self._lock, self._conn:
+            return self._conn.execute("UPDATE conversas SET pasta = ? WHERE pasta = ?",
+                                      (novo.strip()[:80], nome)).rowcount
+
+    def remover_pasta(self, nome: str) -> int:
+        """Desfaz a pasta: as conversas continuam no histórico, só ficam sem pasta."""
+        with self._lock, self._conn:
+            return self._conn.execute("UPDATE conversas SET pasta = NULL WHERE pasta = ?", (nome,)).rowcount
 
     def fechar(self):
         self._conn.close()

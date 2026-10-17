@@ -27,6 +27,7 @@ TAMANHO_LOTE = 1000  # o Chroma limita quantos itens cabem num único add()
 MODELO_PADRAO_ANTIGO = "all-MiniLM-L6-v2"  # coleções criadas antes de guardarmos o modelo
 
 _model = None
+_nome_model = None
 _client = None
 _collection = None
 
@@ -36,9 +37,11 @@ def _manifest_path() -> Path:
 
 
 def _get_model():
-    global _model
-    if _model is None:
+    global _model, _nome_model
+    config.sincronizar()
+    if _model is None or _nome_model != config.EMBEDDING_MODEL:
         _model = SentenceTransformer(config.EMBEDDING_MODEL)
+        _nome_model = config.EMBEDDING_MODEL
     return _model
 
 
@@ -50,6 +53,10 @@ def _espaco_da_colecao(collection) -> str:
 
 def _get_collection():
     global _client, _collection
+    config.sincronizar()
+    if (_collection is not None and (_collection.metadata or {}).get("embedding_model", MODELO_PADRAO_ANTIGO)
+            != config.EMBEDDING_MODEL):
+        _collection = None  # o modelo foi trocado pela tela: a checagem abaixo recria a coleção
     if _collection is None:
         Path(config.PERSIST_DIR).mkdir(parents=True, exist_ok=True)
         _client = chromadb.PersistentClient(
@@ -88,16 +95,30 @@ def _file_id(path: Path, mtime: float) -> str:
     return hashlib.sha256(f"{path}:{mtime}".encode()).hexdigest()
 
 
+def _arquivos_da_pasta(base: Path):
+    for root, pastas, files in os.walk(base):
+        # Nem entra nas subpastas excluídas pela tela (podem ser grandes).
+        pastas[:] = [d for d in pastas if not config.excluido(Path(root) / d)]
+        for name in files:
+            yield Path(root) / name
+
+
 def _iter_files():
+    config.sincronizar()
+    vistos = set()  # fontes podem se sobrepor (uma pasta e um arquivo dentro dela)
     for base_path in config.WATCHED_PATHS:
         if not base_path.exists():
             log(f"[rag] Caminho não encontrado, pulando: {base_path}")
             continue
-        for root, _, files in os.walk(base_path):
-            for name in files:
-                p = Path(root) / name
-                if p.suffix.lower() in config.SUPPORTED_EXTENSIONS:
-                    yield p
+        if base_path.is_file():  # fonte que é um arquivo solto
+            candidatos = [base_path]
+        else:
+            candidatos = _arquivos_da_pasta(base_path)
+        for p in candidatos:
+            if (p.suffix.lower() in config.SUPPORTED_EXTENSIONS and p not in vistos
+                    and not config.excluido(p)):
+                vistos.add(p)
+                yield p
 
 
 def build_index(force: bool = False) -> dict:
@@ -105,9 +126,21 @@ def build_index(force: bool = False) -> dict:
     collection = _get_collection()
     model = _get_model()
 
+    # Trechos gerados com outro tamanho/sobreposição não convivem bem com os
+    # novos: se o chunking mudou desde a última indexação, refaz tudo.
+    parametros = {"chunk_size": config.CHUNK_SIZE, "chunk_overlap": config.CHUNK_OVERLAP}
+    caminho_parametros = Path(config.PERSIST_DIR) / "parametros.json"
+    if caminho_parametros.exists() and json.loads(caminho_parametros.read_text(encoding="utf-8")) != parametros:
+        log("[rag] Parâmetros de chunking mudaram; reindexando tudo.")
+        force = True
+
     manifest = {}
-    if _manifest_path().exists() and not force:
+    if _manifest_path().exists():
         manifest = json.loads(_manifest_path().read_text(encoding="utf-8"))
+    if force:  # apaga tudo o que estava no índice, inclusive de fontes que saíram
+        for key in manifest:
+            collection.delete(where={"source": key})
+        manifest = {}
 
     new_manifest = {}
     indexed, skipped, vazios = 0, 0, 0
@@ -147,6 +180,7 @@ def build_index(force: bool = False) -> dict:
         collection.delete(where={"source": key})
 
     _manifest_path().write_text(json.dumps(new_manifest), encoding="utf-8")
+    caminho_parametros.write_text(json.dumps(parametros), encoding="utf-8")
     resumo = {
         "atualizados": indexed,
         "sem_alteracao": skipped,
@@ -166,18 +200,55 @@ def arquivos_indexados() -> list:
 
 
 def status() -> dict:
+    collection = _get_collection()
     return {
         "indice_construido": _manifest_path().exists(),
         "arquivos_no_manifest": len(arquivos_indexados()),
-        "total_chunks": _get_collection().count(),
+        "total_chunks": collection.count(),
         "modelo_embedding": config.EMBEDDING_MODEL,
         "pastas_monitoradas": [str(p) for p in config.WATCHED_PATHS],
     }
 
 
-def query(text: str, k: int = config.TOP_K_DEFAULT):
-    """Retorna os k trechos mais relevantes para a pergunta."""
+def inventario() -> dict:
+    """
+    O que está no índice, arquivo por arquivo (quantos trechos cada um gerou),
+    e o que mudou nas fontes desde a última indexação (pendentes).
+    """
     collection = _get_collection()
+    manifest = {}
+    if _manifest_path().exists():
+        manifest = json.loads(_manifest_path().read_text(encoding="utf-8"))
+    trechos = {}
+    for meta in collection.get(include=["metadatas"])["metadatas"]:
+        trechos[meta["source"]] = trechos.get(meta["source"], 0) + 1
+
+    arquivos = []
+    for caminho, mtime in manifest.items():
+        p = Path(caminho)
+        arquivos.append({"caminho": caminho, "trechos": trechos.get(caminho, 0), "indexado_mtime": mtime,
+                         "tamanho": p.stat().st_size if p.exists() else None})
+    atuais = {str(p): p.stat().st_mtime for p in _iter_files()}
+    return {
+        "arquivos": arquivos,
+        "novos": sorted(c for c in atuais if c not in manifest),
+        "modificados": sorted(c for c, m in atuais.items() if c in manifest and manifest[c] != m),
+        "apagados": sorted(c for c in manifest if c not in atuais),
+        "total_chunks": collection.count(),
+    }
+
+
+def trechos_do_arquivo(caminho: str) -> list:
+    """Os trechos (chunks) que foram gerados para um arquivo, na ordem."""
+    dados = _get_collection().get(where={"source": caminho}, include=["documents", "metadatas"])
+    pares = sorted(zip(dados["metadatas"], dados["documents"]), key=lambda par: par[0].get("chunk", 0))
+    return [{"chunk": meta.get("chunk"), "texto": doc} for meta, doc in pares]
+
+
+def query(text: str, k: int = None):
+    """Retorna os k trechos mais relevantes para a pergunta (k padrão: config.TOP_K_DEFAULT)."""
+    collection = _get_collection()
+    k = k or config.TOP_K_DEFAULT
     total = collection.count()
     if total == 0:
         return []
@@ -189,5 +260,5 @@ def query(text: str, k: int = config.TOP_K_DEFAULT):
     metas = results.get("metadatas", [[]])[0]
     dists = results.get("distances", [[]])[0]
     for doc, meta, dist in zip(docs, metas, dists):
-        hits.append({"texto": doc, "fonte": meta.get("source"), "score": 1 - dist})
+        hits.append({"texto": doc, "fonte": meta.get("source"), "chunk": meta.get("chunk"), "score": 1 - dist})
     return hits

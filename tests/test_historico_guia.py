@@ -36,6 +36,24 @@ def test_historico_persiste_e_reconstroi(tmp_path):
     assert h.excluir("c1") and h.obter("c1") is None and h.listar() == []
 
 
+def test_historico_renomeia_e_organiza_em_pastas(tmp_path):
+    h = Historico(tmp_path / "h.sqlite3")
+    h.registrar_turno("c1", "pergunta", eventos_turno("explorador", "r"), 10)
+    h.registrar_turno("c2", "outra", eventos_turno("explorador", "r"), 10)
+
+    assert h.renomear("c1", "  Matérias do semestre ") and h.mover("c1", "Faculdade")
+    h.mover("c2", "Faculdade")
+    h.registrar_turno("c1", "mais uma", eventos_turno("explorador", "r"), 10)  # não desfaz o título
+    conversas = {c["id"]: c for c in h.listar()}
+    assert conversas["c1"]["titulo"] == "Matérias do semestre"
+    assert conversas["c1"]["pasta"] == conversas["c2"]["pasta"] == "Faculdade"
+
+    assert h.renomear_pasta("Faculdade", "IC") == 2
+    assert h.mover("c2", "") and h.obter("c2")["pasta"] is None
+    assert h.remover_pasta("IC") == 1 and h.obter("c1")["pasta"] is None
+    assert not h.renomear("inexistente", "x")
+
+
 def test_guia_preenche_exemplos_com_nomes_reais(pastas):
     amostras = guia.coletar_amostras()
     assert "Cálculo 1" in amostras["pasta"] and "protocolo_tcp.md" in amostras["arquivo"]

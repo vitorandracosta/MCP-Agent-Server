@@ -25,6 +25,7 @@ from agents.registry import AGENTS
 from orquestrador import HubMCP, Orquestrador
 from web.guia import montar_guia
 from web.historico import Historico
+from web.rag import rotas as rotas_rag
 
 PASTA_STATIC = config.RAIZ / "web" / "static"
 
@@ -46,6 +47,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Rede MCP multiagente", lifespan=lifespan)
+app.include_router(rotas_rag(estado))
 config.OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/saidas", StaticFiles(directory=str(config.OUTPUT_DIR)), name="saidas")
 app.mount("/static", StaticFiles(directory=str(PASTA_STATIC)), name="static")
@@ -60,6 +62,15 @@ class Pergunta(BaseModel):
 class LeituraResource(BaseModel):
     uri: str
     servidor: str | None = None
+
+
+class EdicaoConversa(BaseModel):
+    titulo: str | None = None  # None = não mexe
+    pasta: str | None = None   # None = não mexe; "" = tira da pasta
+
+
+class EdicaoPasta(BaseModel):
+    nome: str
 
 
 class PedidoPrompt(BaseModel):
@@ -97,6 +108,7 @@ async def _ler_resource_seguro(uri: str) -> str:
 @app.get("/api/status")
 async def status():
     hub = estado["hub"]
+    config.sincronizar()
     llm, indice, gpu = await asyncio.gather(
         _status_llm(), _ler_resource_seguro("rag://status"), _ler_resource_seguro("sistema://gpu"),
     )
@@ -108,7 +120,7 @@ async def status():
         "llm": llm,
         "indice": indice,
         "gpu": gpu,
-        "pastas": [{"caminho": str(p), "existe": p.is_dir()} for p in config.WATCHED_PATHS],
+        "pastas": [{"caminho": str(p), "existe": p.exists()} for p in config.WATCHED_PATHS],
         "saidas": str(config.OUTPUT_DIR),
         "servidores": list(hub.sessoes),
     }
@@ -194,6 +206,32 @@ async def excluir_conversa(conversa_id: str):
     if not estado["historico"].excluir(conversa_id):
         raise HTTPException(404, "Conversa não encontrada.")
     return {"ok": True}
+
+
+@app.patch("/api/conversas/{conversa_id}")
+async def editar_conversa(conversa_id: str, edicao: EdicaoConversa):
+    historico = estado["historico"]
+    if historico.obter(conversa_id) is None:
+        raise HTTPException(404, "Conversa não encontrada.")
+    if edicao.titulo is not None:
+        if not edicao.titulo.strip():
+            raise HTTPException(400, "O título não pode ficar vazio.")
+        historico.renomear(conversa_id, edicao.titulo)
+    if edicao.pasta is not None:
+        historico.mover(conversa_id, edicao.pasta)
+    return {"ok": True}
+
+
+@app.patch("/api/pastas/{nome:path}")
+async def renomear_pasta(nome: str, edicao: EdicaoPasta):
+    if not edicao.nome.strip():
+        raise HTTPException(400, "O nome da pasta não pode ficar vazio.")
+    return {"conversas": estado["historico"].renomear_pasta(nome, edicao.nome)}
+
+
+@app.delete("/api/pastas/{nome:path}")
+async def remover_pasta(nome: str):
+    return {"conversas": estado["historico"].remover_pasta(nome)}
 
 
 @app.post("/api/perguntar")
