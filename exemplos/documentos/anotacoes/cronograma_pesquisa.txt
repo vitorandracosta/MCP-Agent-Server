@@ -1,0 +1,16 @@
+Cronograma da pesquisa (exemplo)
+
+Etapa 1 - Revisão bibliográfica: protocolos de contexto para LLMs, RAG e
+sistemas multiagente.
+Etapa 2 - Protótipo: servidor MCP único com ferramentas de arquivo.
+Etapa 3 - Arquitetura multiagente: roteador com justificativa, quatro
+servidores MCP especializados e interface web.
+Etapa 4 - Avaliação: acurácia do roteador, taxa de chamadas de ferramenta
+corretas e qualidade das respostas com e sem RAG.
+Etapa 5 - Escrita do relatório final.
+
+Métricas sugeridas para a avaliação:
+- acurácia do roteamento (agente escolhido x agente esperado);
+- porcentagem de pedidos em que a ferramenta correta foi chamada;
+- tempo médio de resposta por agente;
+- avaliação manual da fidelidade das respostas às fontes citadas.

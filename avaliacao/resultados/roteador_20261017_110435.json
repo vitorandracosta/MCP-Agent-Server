@@ -1,0 +1,257 @@
+{
+  "modelo": "qwen2.5:3b",
+  "data": "2026-10-17T11:04:35",
+  "rodadas": 1,
+  "resultados": [
+    {
+      "rodada": 1,
+      "mensagem": "Quais arquivos PDF eu tenho na pasta de cálculo?",
+      "esperado": "explorador",
+      "escolhido": "explorador",
+      "metodo": "llm",
+      "motivo": "A mensagem pede informações sobre arquivos PDF na pasta de cálculo, que é uma pergunta sobre arquivos existentes e localizados.",
+      "acertou": true,
+      "ms": 3162
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Onde está o arquivo do trabalho de redes?",
+      "esperado": "explorador",
+      "escolhido": "explorador",
+      "metodo": "llm",
+      "motivo": "A mensagem pede a localização de um arquivo específico, que é um tópico que o agente explorador é capaz de responder",
+      "acertou": true,
+      "ms": 1126
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Liste o que tem na pasta Downloads",
+      "esperado": "explorador",
+      "escolhido": "explorador",
+      "metodo": "llm",
+      "motivo": "A mensagem pede a lista de arquivos na pasta Downloads, que é uma lista de arquivos, portanto, o agente explorador é o mais adequado.",
+      "acertou": true,
+      "ms": 1220
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Mostre o conteúdo do arquivo cronograma_pesquisa.txt",
+      "esperado": "explorador",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "A mensagem pede o conteúdo de um arquivo específico, que é uma pergunta sobre os documentos do usuário.",
+      "acertou": false,
+      "ms": 962
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Tem algum arquivo com 'prova' no nome?",
+      "esperado": "explorador",
+      "escolhido": "explorador",
+      "metodo": "llm",
+      "motivo": "A mensagem busca arquivos específicos no sistema do usuário",
+      "acertou": true,
+      "ms": 728
+    },
+    {
+      "rodada": 1,
+      "mensagem": "O que minhas anotações dizem sobre RAG?",
+      "esperado": "pesquisador",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "A mensagem menciona 'minhas anotações', que se refere a documentos do usuário.",
+      "acertou": true,
+      "ms": 904
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Segundo os meus documentos, quais são as primitivas do MCP?",
+      "esperado": "pesquisador",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "A mensagem pede informações sobre conteúdo dos documentos do usuário, especificamente sobre primitivas do MCP, que está relacionado aos documentos do usuário.",
+      "acertou": true,
+      "ms": 1590
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Explique chunking com base no material que eu tenho, citando a fonte",
+      "esperado": "pesquisador",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "O usuário pediu uma explicação baseada no material do usuário, o que é típico de pesquisar no contexto de documentos do usuário.",
+      "acertou": true,
+      "ms": 1581
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Nos meus arquivos, qual é a métrica sugerida para avaliar o roteador?",
+      "esperado": "pesquisador",
+      "escolhido": "geral",
+      "metodo": "llm",
+      "motivo": "A mensagem não menciona arquivos ou documentos específicos do usuário, apenas uma pergunta sobre métricas de avaliação do roteador.",
+      "acertou": false,
+      "ms": 1544
+    },
+    {
+      "rodada": 1,
+      "mensagem": "O que a apostila de banco de dados fala sobre normalização?",
+      "esperado": "pesquisador",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "A mensagem menciona 'apostila de banco de dados', que é um documento do usuário, então o agente pesquisador é o mais adequado para responder essa pergunta.",
+      "acertou": true,
+      "ms": 1297
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Resuma a pasta ia",
+      "esperado": "resumidor",
+      "escolhido": "resumidor",
+      "metodo": "llm",
+      "motivo": "A mensagem pede um resumo da pasta 'ia', que é um assunto dos documentos do usuário.",
+      "acertou": true,
+      "ms": 957
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Faça um resumo do arquivo model_context_protocol.md",
+      "esperado": "resumidor",
+      "escolhido": "resumidor",
+      "metodo": "llm",
+      "motivo": "O usuário pediu um resumo do arquivo model_context_protocol.md",
+      "acertou": true,
+      "ms": 767
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Me dá um resumo do que tem na pasta de anotações",
+      "esperado": "resumidor",
+      "escolhido": "resumidor",
+      "metodo": "llm",
+      "motivo": "A pasta de anotações é um assunto dos documentos locais e a mensagem pede um resumo.",
+      "acertou": true,
+      "ms": 974
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Resuma em tópicos o documento sobre sistemas multiagente",
+      "esperado": "resumidor",
+      "escolhido": "resumidor",
+      "metodo": "llm",
+      "motivo": "A mensagem pede um resumo de um documento específico, que é um tópico geral",
+      "acertou": true,
+      "ms": 913
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Crie um arquivo resumo_mcp.md com os principais pontos sobre o MCP",
+      "esperado": "escritor",
+      "escolhido": "escritor",
+      "metodo": "llm",
+      "motivo": "O agente escritor é responsável por criar, salvar e gerar arquivos, conforme solicitado pelo usuário.",
+      "acertou": true,
+      "ms": 1425
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Salve uma lista de tarefas da semana em tarefas.txt",
+      "esperado": "escritor",
+      "escolhido": "escritor",
+      "metodo": "llm",
+      "motivo": "O usuário pediu para salvar uma lista de tarefas em um arquivo, o que requer a criação e salvação de um arquivo.",
+      "acertou": true,
+      "ms": 1137
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Gere um relatório em .docx sobre RAG",
+      "esperado": "escritor",
+      "escolhido": "escritor",
+      "metodo": "llm",
+      "motivo": "O usuário pediu para criar um relatório em .docx sobre RAG, que é um arquivo que pode ser salvo na pasta saidas/.",
+      "acertou": true,
+      "ms": 1174
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Escreva um plano de estudos e salve num arquivo",
+      "esperado": "escritor",
+      "escolhido": "escritor",
+      "metodo": "llm",
+      "motivo": "O usuário pediu para criar e salvar um arquivo, especificamente um plano de estudos.",
+      "acertou": true,
+      "ms": 887
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Crie um script python que imprime olá mundo e salve como ola.py",
+      "esperado": "escritor",
+      "escolhido": "escritor",
+      "metodo": "llm",
+      "motivo": "O agente escritor é adequado para criar e salvar um arquivo Python, conforme solicitado pelo usuário.",
+      "acertou": true,
+      "ms": 1407
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Quanta VRAM livre tem minha GPU?",
+      "esperado": "sistema",
+      "escolhido": "sistema",
+      "metodo": "llm",
+      "motivo": "A mensagem questiona informações sobre o hardware do computador, especificamente a quantidade de VRAM livre da GPU.",
+      "acertou": true,
+      "ms": 953
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Qual é o sistema operacional deste computador?",
+      "esperado": "sistema",
+      "escolhido": "sistema",
+      "metodo": "llm",
+      "motivo": "A mensagem pede informações sobre o sistema operacional do computador, que é uma pergunta sobre o hardware do sistema.",
+      "acertou": true,
+      "ms": 1004
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Minha placa de vídeo aguenta um modelo de 7B?",
+      "esperado": "sistema",
+      "escolhido": "sistema",
+      "metodo": "llm",
+      "motivo": "A mensagem questiona sobre a capacidade da placa de vídeo, que é uma questão de hardware do computador.",
+      "acertou": true,
+      "ms": 997
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Qual é a capital da França?",
+      "esperado": "geral",
+      "escolhido": "geral",
+      "metodo": "llm",
+      "motivo": "A mensagem do usuário não menciona documentos ou arquivos do usuário, nem o computador dele. Ela é uma pergunta de conhecimento geral sobre geografia.",
+      "acertou": true,
+      "ms": 1204
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Explique o que é aprendizado por reforço",
+      "esperado": "geral",
+      "escolhido": "geral",
+      "metodo": "llm",
+      "motivo": "A explicação sobre o aprendizado por reforço é uma questão de conhecimento geral e não envolve arquivos ou documentos específicos do usuário.",
+      "acertou": true,
+      "ms": 1121
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Me conte uma curiosidade sobre a história da computação",
+      "esperado": "geral",
+      "escolhido": "geral",
+      "metodo": "llm",
+      "motivo": "A mensagem do usuário pediu uma curiosidade sobre a história da computação, que não menciona documentos ou arquivos do usuário, nem o computador dele.",
+      "acertou": true,
+      "ms": 1178
+    }
+  ]
+}

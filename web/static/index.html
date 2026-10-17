@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rede MCP Multiagente</title>
+<link rel="stylesheet" href="/static/css/estilo.css">
+</head>
+<body>
+<header class="topo">
+  <div class="marca">
+    <span class="logo" aria-hidden="true">◆</span>
+    <div>
+      <h1>Rede MCP Multiagente</h1>
+      <span class="sub" id="modelo">carregando…</span>
+    </div>
+  </div>
+  <nav class="abas" role="tablist">
+    <a href="#conversa" role="tab" data-aba="conversa">Conversa</a>
+    <a href="#historico" role="tab" data-aba="historico">Histórico</a>
+    <a href="#mcp" role="tab" data-aba="mcp">Recursos MCP</a>
+    <a href="#fluxo" role="tab" data-aba="fluxo">Como funciona</a>
+  </nav>
+</header>
+
+<!-- ============ CONVERSA ============ -->
+<section class="aba" id="aba-conversa">
+  <div class="conversa-layout">
+    <aside class="guia" id="guia" aria-label="O que dá para fazer"></aside>
+    <main class="chat">
+      <div class="chat-barra">
+        <button class="so-mobile" id="abrir-guia" type="button">☰ Guia</button>
+        <span class="titulo-conversa" id="titulo-conversa">Nova conversa</span>
+        <label class="seletor">Agente
+          <select id="seletor"><option value="auto">Automático (roteador)</option></select>
+        </label>
+        <button id="nova" type="button">Nova conversa</button>
+      </div>
+      <div class="mensagens" id="mensagens"></div>
+      <form class="entrada" id="form">
+        <textarea id="entrada" rows="1" placeholder="Peça algo… (Enter envia, Shift+Enter quebra linha)"></textarea>
+        <button class="primario" id="enviar" type="submit">Enviar</button>
+      </form>
+    </main>
+  </div>
+</section>
+
+<!-- ============ HISTÓRICO ============ -->
+<section class="aba" id="aba-historico" hidden>
+  <div class="historico-layout">
+    <aside class="lista-conversas">
+      <input type="search" id="busca-historico" placeholder="Buscar nas conversas…">
+      <div id="lista-conversas"></div>
+    </aside>
+    <main class="detalhe-conversa" id="detalhe-conversa">
+      <p class="vazio-texto">Selecione uma conversa para ver cada turno: o agente escolhido, o motivo, os resources lidos, as tools chamadas e a resposta.</p>
+    </main>
+  </div>
+</section>
+
+<!-- ============ RECURSOS MCP ============ -->
+<section class="aba pagina" id="aba-mcp" hidden></section>
+
+<!-- ============ COMO FUNCIONA ============ -->
+<section class="aba pagina" id="aba-fluxo" hidden></section>
+
+<script type="module" src="/static/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,507 @@
+{
+  "modelo": "qwen2.5:3b",
+  "data": "2026-10-17T11:03:46",
+  "rodadas": 2,
+  "resultados": [
+    {
+      "rodada": 1,
+      "mensagem": "Quais arquivos PDF eu tenho na pasta de cálculo?",
+      "esperado": "explorador",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "Pesquisa em documentos locais para encontrar PDFs na pasta de cálculo",
+      "acertou": false,
+      "ms": 2431
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Onde está o arquivo do trabalho de redes?",
+      "esperado": "explorador",
+      "escolhido": "explorador",
+      "metodo": "llm",
+      "motivo": "Para encontrar o arquivo do trabalho de redes no sistema do usuário.",
+      "acertou": true,
+      "ms": 763
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Liste o que tem na pasta Downloads",
+      "esperado": "explorador",
+      "escolhido": "explorador",
+      "metodo": "llm",
+      "motivo": "O explorador é o agente mais adequado para listar o conteúdo de uma pasta, como a pasta Downloads.",
+      "acertou": true,
+      "ms": 965
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Mostre o conteúdo do arquivo cronograma_pesquisa.txt",
+      "esperado": "explorador",
+      "escolhido": "explorador",
+      "metodo": "llm",
+      "motivo": "O agente explorador é responsável por listar e mostrar o conteúdo de arquivos locais, incluindo o arquivo cronograma_pesquisa.txt solicitado pelo usuário.",
+      "acertou": true,
+      "ms": 1216
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Tem algum arquivo com 'prova' no nome?",
+      "esperado": "explorador",
+      "escolhido": "explorador",
+      "metodo": "llm",
+      "motivo": "Para verificar a existência de arquivos com 'prova' no nome localmente.",
+      "acertou": true,
+      "ms": 863
+    },
+    {
+      "rodada": 1,
+      "mensagem": "O que minhas anotações dizem sobre RAG?",
+      "esperado": "pesquisador",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "A pesquisa em anotações é uma tarefa que envolve o conteúdo dos documentos locais, o que se alinha com as habilidades do pesquisador.",
+      "acertou": true,
+      "ms": 1189
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Segundo os meus documentos, quais são as primitivas do MCP?",
+      "esperado": "pesquisador",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "O pesquisador é o agente mais adequado para responder perguntas sobre conteúdo de documentos, como a definição de primitivas do MCP.",
+      "acertou": true,
+      "ms": 1620
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Explique chunking com base no material que eu tenho, citando a fonte",
+      "esperado": "pesquisador",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "O pesquisador é o agente mais adequado para responder perguntas sobre conteúdo de documentos, incluindo explicar um conceito como chunking de forma detalhada e citando fontes.",
+      "acertou": true,
+      "ms": 1818
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Nos meus arquivos, qual é a métrica sugerida para avaliar o roteador?",
+      "esperado": "pesquisador",
+      "escolhido": "geral",
+      "metodo": "llm",
+      "motivo": "A resposta não envolve os arquivos do usuário nem o desempenho do computador, então a melhor opção é um agente geral.",
+      "acertou": false,
+      "ms": 1569
+    },
+    {
+      "rodada": 1,
+      "mensagem": "O que a apostila de banco de dados fala sobre normalização?",
+      "esperado": "pesquisador",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "O pesquisador é o agente mais adequado para responder perguntas sobre conteúdo de documentos locais, como a apostila de banco de dados.",
+      "acertou": true,
+      "ms": 1132
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Resuma a pasta ia",
+      "esperado": "resumidor",
+      "escolhido": "resumidor",
+      "metodo": "llm",
+      "motivo": "Resumo de pastas é uma tarefa que envolve a leitura e a compreensão de conteúdo, que é a função principal do resumidor.",
+      "acertou": true,
+      "ms": 1186
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Faça um resumo do arquivo model_context_protocol.md",
+      "esperado": "resumidor",
+      "escolhido": "resumidor",
+      "metodo": "llm",
+      "motivo": "O resumidor é o agente mais adequado para gerar um resumo de um arquivo específico.",
+      "acertou": true,
+      "ms": 944
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Me dá um resumo do que tem na pasta de anotações",
+      "esperado": "resumidor",
+      "escolhido": "resumidor",
+      "metodo": "llm",
+      "motivo": "O resumidor é o agente mais adequado para gerar um resumo de um conjunto de arquivos ou pasta, como a pasta de anotações.",
+      "acertou": true,
+      "ms": 1189
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Resuma em tópicos o documento sobre sistemas multiagente",
+      "esperado": "resumidor",
+      "escolhido": "resumidor",
+      "metodo": "llm",
+      "motivo": "O resumidor resume um assunto dos documentos locais, o que é necessário neste caso de resumir o documento sobre sistemas multiagente.",
+      "acertou": true,
+      "ms": 1130
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Crie um arquivo resumo_mcp.md com os principais pontos sobre o MCP",
+      "esperado": "escritor",
+      "escolhido": "escritor",
+      "metodo": "llm",
+      "motivo": "O escritor agente é responsável por criar, salvar e gerar arquivos, conforme solicitado pelo usuário para criar um arquivo resumo_mcp.md",
+      "acertou": true,
+      "ms": 1584
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Salve uma lista de tarefas da semana em tarefas.txt",
+      "esperado": "escritor",
+      "escolhido": "escritor",
+      "metodo": "llm",
+      "motivo": "O escritor agente é responsável por criar, salvar e gerar arquivos, conforme solicitado pelo usuário para salvar uma lista de tarefas em tarefas.txt.",
+      "acertou": true,
+      "ms": 1227
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Gere um relatório em .docx sobre RAG",
+      "esperado": "escritor",
+      "escolhido": "escritor",
+      "metodo": "llm",
+      "motivo": "O escritor agente é adequado para gerar um arquivo em .docx, como um relatório, baseado no pedido do usuário.",
+      "acertou": true,
+      "ms": 1107
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Escreva um plano de estudos e salve num arquivo",
+      "esperado": "escritor",
+      "escolhido": "escritor",
+      "metodo": "llm",
+      "motivo": "O escritor agente é adequado para criar e salvar um arquivo, como um plano de estudos, na pasta saidas/.",
+      "acertou": true,
+      "ms": 1069
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Crie um script python que imprime olá mundo e salve como ola.py",
+      "esperado": "escritor",
+      "escolhido": "escritor",
+      "metodo": "llm",
+      "motivo": "O escritor é o agente mais adequado para criar um arquivo Python e salvar como ola.py",
+      "acertou": true,
+      "ms": 1383
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Quanta VRAM livre tem minha GPU?",
+      "esperado": "sistema",
+      "escolhido": "sistema",
+      "metodo": "llm",
+      "motivo": "Para responder a perguntas sobre o desempenho do computador, incluindo a quantidade de VRAM livre da GPU.",
+      "acertou": true,
+      "ms": 1026
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Qual é o sistema operacional deste computador?",
+      "esperado": "sistema",
+      "escolhido": "sistema",
+      "metodo": "llm",
+      "motivo": "A resposta envolve informações sobre o sistema operacional do computador.",
+      "acertou": true,
+      "ms": 757
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Minha placa de vídeo aguenta um modelo de 7B?",
+      "esperado": "sistema",
+      "escolhido": "sistema",
+      "metodo": "llm",
+      "motivo": "Para fornecer informações sobre o desempenho do sistema, incluindo a placa de vídeo.",
+      "acertou": true,
+      "ms": 926
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Qual é a capital da França?",
+      "esperado": "geral",
+      "escolhido": "geral",
+      "metodo": "llm",
+      "motivo": "A resposta sobre a capital da França é uma informação geral e não requer acesso a arquivos do usuário ou conhecimento sobre o sistema operacional do usuário.",
+      "acertou": true,
+      "ms": 1126
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Explique o que é aprendizado por reforço",
+      "esperado": "geral",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "O pesquisador é o agente mais apropriado para responder perguntas sobre conteúdo, como a explicação do aprendizado por reforço.",
+      "acertou": false,
+      "ms": 1132
+    },
+    {
+      "rodada": 1,
+      "mensagem": "Me conte uma curiosidade sobre a história da computação",
+      "esperado": "geral",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "O pesquisador é o agente mais apropriado para responder perguntas sobre conteúdo de documentos, incluindo curiosidades históricas.",
+      "acertou": false,
+      "ms": 1134
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Quais arquivos PDF eu tenho na pasta de cálculo?",
+      "esperado": "explorador",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "Pesquisador é o agente mais adequado para responder perguntas sobre conteúdo de documentos locais, incluindo PDFs.",
+      "acertou": false,
+      "ms": 1056
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Onde está o arquivo do trabalho de redes?",
+      "esperado": "explorador",
+      "escolhido": "explorador",
+      "metodo": "llm",
+      "motivo": "Para encontrar o arquivo do trabalho de redes no sistema do usuário.",
+      "acertou": true,
+      "ms": 766
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Liste o que tem na pasta Downloads",
+      "esperado": "explorador",
+      "escolhido": "explorador",
+      "metodo": "llm",
+      "motivo": "O explorador é o agente mais adequado para listar o conteúdo de uma pasta, como a pasta Downloads.",
+      "acertou": true,
+      "ms": 959
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Mostre o conteúdo do arquivo cronograma_pesquisa.txt",
+      "esperado": "explorador",
+      "escolhido": "explorador",
+      "metodo": "llm",
+      "motivo": "O agente explorador é responsável por listar e mostrar o conteúdo de arquivos locais, incluindo o arquivo cronograma_pesquisa.txt solicitado pelo usuário.",
+      "acertou": true,
+      "ms": 1212
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Tem algum arquivo com 'prova' no nome?",
+      "esperado": "explorador",
+      "escolhido": "explorador",
+      "metodo": "llm",
+      "motivo": "Para verificar a existência de arquivos com 'prova' no nome localmente.",
+      "acertou": true,
+      "ms": 876
+    },
+    {
+      "rodada": 2,
+      "mensagem": "O que minhas anotações dizem sobre RAG?",
+      "esperado": "pesquisador",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "A pesquisa em anotações é uma tarefa que envolve o conteúdo dos documentos locais, o que se alinha com as habilidades do pesquisador.",
+      "acertou": true,
+      "ms": 1189
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Segundo os meus documentos, quais são as primitivas do MCP?",
+      "esperado": "pesquisador",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "O pesquisador é o agente mais adequado para responder perguntas sobre conteúdo de documentos, como a definição de primitivas do MCP.",
+      "acertou": true,
+      "ms": 1609
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Explique chunking com base no material que eu tenho, citando a fonte",
+      "esperado": "pesquisador",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "O pesquisador é o agente mais adequado para responder perguntas sobre conteúdo de documentos, incluindo explicar um conceito como chunking de forma detalhada e citando fontes.",
+      "acertou": true,
+      "ms": 1815
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Nos meus arquivos, qual é a métrica sugerida para avaliar o roteador?",
+      "esperado": "pesquisador",
+      "escolhido": "geral",
+      "metodo": "llm",
+      "motivo": "A resposta não envolve os arquivos do usuário nem o desempenho do computador, então a melhor opção é um agente geral.",
+      "acertou": false,
+      "ms": 1563
+    },
+    {
+      "rodada": 2,
+      "mensagem": "O que a apostila de banco de dados fala sobre normalização?",
+      "esperado": "pesquisador",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "O pesquisador é o agente mais adequado para responder perguntas sobre conteúdo de documentos locais, como a apostila de banco de dados.",
+      "acertou": true,
+      "ms": 1132
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Resuma a pasta ia",
+      "esperado": "resumidor",
+      "escolhido": "resumidor",
+      "metodo": "llm",
+      "motivo": "Resumo de pastas é uma tarefa que envolve a leitura e a compreensão de conteúdo, que é a função principal do resumidor.",
+      "acertou": true,
+      "ms": 1186
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Faça um resumo do arquivo model_context_protocol.md",
+      "esperado": "resumidor",
+      "escolhido": "resumidor",
+      "metodo": "llm",
+      "motivo": "O resumidor é o agente mais adequado para gerar um resumo de um arquivo específico.",
+      "acertou": true,
+      "ms": 940
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Me dá um resumo do que tem na pasta de anotações",
+      "esperado": "resumidor",
+      "escolhido": "resumidor",
+      "metodo": "llm",
+      "motivo": "O resumidor é o agente mais adequado para gerar um resumo de um conjunto de arquivos ou pasta, como a pasta de anotações.",
+      "acertou": true,
+      "ms": 1193
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Resuma em tópicos o documento sobre sistemas multiagente",
+      "esperado": "resumidor",
+      "escolhido": "resumidor",
+      "metodo": "llm",
+      "motivo": "O resumidor resume um assunto dos documentos locais, o que é necessário neste caso de resumir o documento sobre sistemas multiagente.",
+      "acertou": true,
+      "ms": 1128
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Crie um arquivo resumo_mcp.md com os principais pontos sobre o MCP",
+      "esperado": "escritor",
+      "escolhido": "escritor",
+      "metodo": "llm",
+      "motivo": "O escritor agente é responsável por criar, salvar e gerar arquivos, conforme solicitado pelo usuário para criar um arquivo resumo_mcp.md",
+      "acertou": true,
+      "ms": 1584
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Salve uma lista de tarefas da semana em tarefas.txt",
+      "esperado": "escritor",
+      "escolhido": "escritor",
+      "metodo": "llm",
+      "motivo": "O escritor agente é responsável por criar, salvar e gerar arquivos, conforme solicitado pelo usuário para salvar uma lista de tarefas em tarefas.txt.",
+      "acertou": true,
+      "ms": 1228
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Gere um relatório em .docx sobre RAG",
+      "esperado": "escritor",
+      "escolhido": "escritor",
+      "metodo": "llm",
+      "motivo": "O escritor agente é adequado para gerar um arquivo em .docx, como um relatório, baseado no pedido do usuário.",
+      "acertou": true,
+      "ms": 1108
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Escreva um plano de estudos e salve num arquivo",
+      "esperado": "escritor",
+      "escolhido": "escritor",
+      "metodo": "llm",
+      "motivo": "O escritor agente é adequado para criar e salvar um arquivo, como um plano de estudos, na pasta saidas/.",
+      "acertou": true,
+      "ms": 1067
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Crie um script python que imprime olá mundo e salve como ola.py",
+      "esperado": "escritor",
+      "escolhido": "escritor",
+      "metodo": "llm",
+      "motivo": "O escritor é o agente mais adequado para criar um arquivo Python e salvar como ola.py",
+      "acertou": true,
+      "ms": 1385
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Quanta VRAM livre tem minha GPU?",
+      "esperado": "sistema",
+      "escolhido": "sistema",
+      "metodo": "llm",
+      "motivo": "Para responder a perguntas sobre o desempenho do computador, incluindo a quantidade de VRAM livre da GPU.",
+      "acertou": true,
+      "ms": 1030
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Qual é o sistema operacional deste computador?",
+      "esperado": "sistema",
+      "escolhido": "sistema",
+      "metodo": "llm",
+      "motivo": "A resposta envolve informações sobre o sistema operacional do computador.",
+      "acertou": true,
+      "ms": 761
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Minha placa de vídeo aguenta um modelo de 7B?",
+      "esperado": "sistema",
+      "escolhido": "sistema",
+      "metodo": "llm",
+      "motivo": "Para fornecer informações sobre o desempenho do sistema, incluindo a placa de vídeo.",
+      "acertou": true,
+      "ms": 929
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Qual é a capital da França?",
+      "esperado": "geral",
+      "escolhido": "geral",
+      "metodo": "llm",
+      "motivo": "A resposta sobre a capital da França é uma informação geral e não requer acesso a arquivos do usuário ou conhecimento sobre o sistema operacional do usuário.",
+      "acertou": true,
+      "ms": 1131
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Explique o que é aprendizado por reforço",
+      "esperado": "geral",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "O pesquisador é o agente mais apropriado para responder perguntas sobre conteúdo, como a explicação do aprendizado por reforço.",
+      "acertou": false,
+      "ms": 1128
+    },
+    {
+      "rodada": 2,
+      "mensagem": "Me conte uma curiosidade sobre a história da computação",
+      "esperado": "geral",
+      "escolhido": "pesquisador",
+      "metodo": "llm",
+      "motivo": "O pesquisador é o agente mais apropriado para responder perguntas sobre conteúdo de documentos, incluindo curiosidades históricas.",
+      "acertou": false,
+      "ms": 1130
+    }
+  ]
+}

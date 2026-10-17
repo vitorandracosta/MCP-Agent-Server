@@ -1,0 +1,32 @@
+[
+  {"mensagem": "Quais arquivos PDF eu tenho na pasta de cálculo?", "esperado": "explorador"},
+  {"mensagem": "Onde está o arquivo do trabalho de redes?", "esperado": "explorador"},
+  {"mensagem": "Liste o que tem na pasta Downloads", "esperado": "explorador"},
+  {"mensagem": "Mostre o conteúdo do arquivo cronograma_pesquisa.txt", "esperado": "explorador"},
+  {"mensagem": "Tem algum arquivo com 'prova' no nome?", "esperado": "explorador"},
+
+  {"mensagem": "O que minhas anotações dizem sobre RAG?", "esperado": "pesquisador"},
+  {"mensagem": "Segundo os meus documentos, quais são as primitivas do MCP?", "esperado": "pesquisador"},
+  {"mensagem": "Explique chunking com base no material que eu tenho, citando a fonte", "esperado": "pesquisador"},
+  {"mensagem": "Nos meus arquivos, qual é a métrica sugerida para avaliar o roteador?", "esperado": "pesquisador"},
+  {"mensagem": "O que a apostila de banco de dados fala sobre normalização?", "esperado": "pesquisador"},
+
+  {"mensagem": "Resuma a pasta ia", "esperado": "resumidor"},
+  {"mensagem": "Faça um resumo do arquivo model_context_protocol.md", "esperado": "resumidor"},
+  {"mensagem": "Me dá um resumo do que tem na pasta de anotações", "esperado": "resumidor"},
+  {"mensagem": "Resuma em tópicos o documento sobre sistemas multiagente", "esperado": "resumidor"},
+
+  {"mensagem": "Crie um arquivo resumo_mcp.md com os principais pontos sobre o MCP", "esperado": "escritor"},
+  {"mensagem": "Salve uma lista de tarefas da semana em tarefas.txt", "esperado": "escritor"},
+  {"mensagem": "Gere um relatório em .docx sobre RAG", "esperado": "escritor"},
+  {"mensagem": "Escreva um plano de estudos e salve num arquivo", "esperado": "escritor"},
+  {"mensagem": "Crie um script python que imprime olá mundo e salve como ola.py", "esperado": "escritor"},
+
+  {"mensagem": "Quanta VRAM livre tem minha GPU?", "esperado": "sistema"},
+  {"mensagem": "Qual é o sistema operacional deste computador?", "esperado": "sistema"},
+  {"mensagem": "Minha placa de vídeo aguenta um modelo de 7B?", "esperado": "sistema"},
+
+  {"mensagem": "Qual é a capital da França?", "esperado": "geral"},
+  {"mensagem": "Explique o que é aprendizado por reforço", "esperado": "geral"},
+  {"mensagem": "Me conte uma curiosidade sobre a história da computação", "esperado": "geral"}
+]

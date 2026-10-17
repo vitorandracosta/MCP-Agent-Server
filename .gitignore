@@ -1,0 +1,24 @@
+# Configuração pessoal
+.env
+
+# Dados gerados localmente (podem conter conteúdo dos seus documentos)
+rag_index/
+dados/
+saidas/*
+!saidas/.gitkeep
+
+# Código antigo (antes da reestruturação)
+_antigo/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Editores / SO
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
